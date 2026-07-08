@@ -17,6 +17,53 @@ This system monitors Parkinson's disease symptoms using wearable sensors:
 
 ---
 
+## Start Real Hardware Here
+
+**Ready to connect real ESP32 + 2x MPU6050 + buzzer?**
+
+→ **[docs/START_REAL_HARDWARE_HERE.md](docs/START_REAL_HARDWARE_HERE.md)**
+
+This guide takes you from zero to working hardware with real sensor data stored in SQLite.
+
+---
+
+## Real Hardware Data Flow
+
+```
+2x MPU6050 (hand + shoe)
+        │
+        ▼
+      ESP32
+        │
+        │ Wi-Fi WebSocket
+        ▼
+   FastAPI Server (laptop)
+        │
+        ▼
+   Pydantic Validation
+        │
+        ▼
+   SQLAlchemy ORM
+        │
+        ▼
+    SQLite Database
+```
+
+## How to Inspect Stored Data
+
+```powershell
+# View latest records
+python tools/inspect_sensor_data.py --limit 20
+
+# Watch live data arriving
+python tools/watch_sensor_data.py
+
+# Record count statistics
+python tools/count_sensor_records.py
+```
+
+---
+
 ## Current Stage
 
 **This repository is currently at Stage 1: Project Foundation.**
@@ -63,7 +110,15 @@ The system foundation is complete and runnable without physical ESP32 hardware. 
 ```
 parkinson-monitoring-system/
 ├── firmware/
-│   └── esp32_dual_mpu6050/       # ESP32 firmware (Stage 2)
+│   └── esp32_dual_mpu6050/       # ESP32 firmware
+│       ├── esp32_dual_mpu6050.ino # Final firmware (dual MPU6050 + Wi-Fi + buzzer)
+│       └── tests/                  # Incremental test sketches
+│           ├── 01_esp32_basic/     # Basic ESP32 test
+│           ├── 02_i2c_scanner/     # I2C device detection
+│           ├── 03_single_mpu/      # Single MPU6050 test
+│           ├── 04_dual_mpu_serial/ # Dual MPU6050 serial output
+│           ├── 05_wifi_test/       # Wi-Fi connection test
+│           └── 06_websocket_test/  # WebSocket communication test
 ├── pc_backend/
 │   └── app/
 │       ├── api/                   # REST endpoints
@@ -84,6 +139,10 @@ parkinson-monitoring-system/
 ├── simulator/
 │   ├── mock_esp32.py              # Mock ESP32 simulator
 │   └── signal_generator.py        # Synthetic signals
+├── tools/
+│   ├── inspect_sensor_data.py     # View stored sensor readings
+│   ├── watch_sensor_data.py       # Live monitor new records
+│   └── count_sensor_records.py    # Record statistics
 ├── data/
 │   ├── raw/                       # Raw sensor data
 │   ├── interim/                   # Intermediate data

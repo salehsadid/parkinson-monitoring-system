@@ -53,14 +53,15 @@ def _validate_device_identity(
     device_id: str,
     packet: SensorPacket,
     db: Session,
-) -> Optional[Device]:
+) -> bool:
     """
     Validate device identity and patient consistency.
 
-    Checks:
-    1. Device must exist in database
-    2. Device ID in URL must match packet.device_id
-    3. Device must be registered to the patient in packet
+    Checks (only for KNOWN devices):
+    1. Device ID in URL must match packet.device_id
+    2. Device must be registered to the patient in packet
+
+    Unknown devices are allowed through for auto-registration.
 
     Args:
         device_id: Device identifier from URL
@@ -68,18 +69,15 @@ def _validate_device_identity(
         db: Database session
 
     Returns:
-        Device object if validation passes, None otherwise
-
-    Logs:
-        Warning if device not found
-        Error if device_id mismatch
-        Error if patient mismatch
+        True if validation passes (or device is new), False if mismatch
     """
-    # Check device exists
+    # Check if device exists in database
     device = db.query(Device).filter(Device.device_id == device_id).first()
+
     if not device:
-        logger.warning(f"Device {device_id} not found in database")
-        return None
+        # Unknown device - allow for auto-registration
+        logger.info(f"Device {device_id} is new, will auto-register")
+        return True
 
     # Validate device_id matches packet
     if device.device_id != packet.device_id:
@@ -87,7 +85,7 @@ def _validate_device_identity(
             f"Device identity mismatch: URL={device_id}, "
             f"packet={packet.device_id}"
         )
-        return None
+        return False
 
     # Validate patient consistency
     if device.patient_id != packet.patient_id:
@@ -95,9 +93,9 @@ def _validate_device_identity(
             f"Patient mismatch: device {device_id} registered to "
             f"{device.patient_id}, packet claims {packet.patient_id}"
         )
-        return None
+        return False
 
-    return device
+    return True
 
 
 async def handle_sensor_packet(
@@ -210,8 +208,7 @@ async def websocket_sensor_endpoint(
                 continue
 
             # Validate device identity and patient consistency
-            device = _validate_device_identity(device_id, packet, db)
-            if not device:
+            if not _validate_device_identity(device_id, packet, db):
                 continue
 
             # Update connection manager
