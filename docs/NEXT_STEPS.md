@@ -2,63 +2,14 @@
 
 ## Parkinson's Tremor and FOG Monitoring & Cueing System
 
-### Stage 2: Real ESP32 Firmware
+### Completed Stages
 
-#### Objective
-Implement actual ESP32 firmware that reads dual MPU6050 sensors and communicates with the PC backend.
-
-#### Hardware Requirements
-- ESP32 development board (e.g., ESP32-DevKitC)
-- 2x MPU6050 breakout boards
-- Buzzer (active or passive)
-- Jumper wires
-- Breadboard
-- USB cable for programming
-
-#### Tasks
-
-**2.1 Basic MPU6050 Reading**
-- [ ] Wire MPU6050 #1 (hand) to ESP32 I2C (SDA=21, SCL=22)
-- [ ] Wire MPU6050 #2 (shoe) to ESP32 I2C (SDA=16, SCL=17)
-- [ ] Use separate I2C buses for each sensor
-- [ ] Configure MPU6050 at 50 Hz sampling rate
-- [ ] Read all 6 axes from both sensors
-- [ ] Verify data accuracy with serial monitor
-
-**2.2 Wi-Fi Connectivity**
-- [ ] Configure ESP32 Wi-Fi credentials
-- [ ] Implement reconnection logic
-- [ ] Add connection status LED indicator
-
-**2.3 WebSocket Client**
-- [ ] Implement WebSocket client on ESP32
-- [ ] Connect to PC backend at `ws://{PC_IP}:8000/ws/device/{device_id}`
-- [ ] Send sensor packets at 50 Hz
-- [ ] Implement JSON serialization
-- [ ] Handle connection drops gracefully
-
-**2.4 Command Reception**
-- [ ] Listen for commands from PC
-- [ ] Parse FOG_CUE_ON command
-- [ ] Parse FOG_CUE_OFF command
-- [ ] Implement command acknowledgment
-
-**2.5 Buzzer Control**
-- [ ] Wire buzzer to ESP32 GPIO (e.g., GPIO 25)
-- [ ] Implement non-blocking buzzer control
-- [ ] Create rhythmic cueing pattern (tik-tik-tik)
-- [ ] Test buzzer activation/deactivation
-
-**2.6 Integration Testing**
-- [ ] Test with PC backend running
-- [ ] Verify sensor data reception in database
-- [ ] Test FOG cue command flow
-- [ ] Monitor for stability over 1 hour
-
-#### Resources
-- [Arduino MPU6050 Tutorial](https://randomnerdtutorials.com/esp32-mpu-6050-accelerometer-gyroscope-arduino/)
-- [ESP32 WebSocket Client](https://github.com/Links204/arduinoWebSockets)
-- [ESP32 I2C Multiple Devices](https://randomnerdtutorials.com/esp32-i2c-communication-arduino-ide/)
+| Stage | Status | Details |
+|-------|--------|---------|
+| Stage 1 | ✅ Complete | Project foundation, 47 tests |
+| Stage 1.1 | ✅ Complete | Hardening, Pydantic v2 migration |
+| Stage 2 | ✅ Complete | Real ESP32 hardware verified |
+| Stage 2.1 | ✅ Complete | Signal validation, 83 tests, analysis tools |
 
 ---
 
@@ -257,11 +208,12 @@ Validate the system with clinical experts and patients.
 
 #### From You (Human Developer)
 
-**Hardware Setup**
-1. Purchase ESP32 and MPU6050 sensors
-2. Set up development environment (Arduino IDE or PlatformIO)
-3. Wire and test basic sensor reading
-4. Document sensor placement on patient
+**Immediate (Physical Validation)**
+1. Run stationary baseline test — verify hand_az ≈ 9.8 m/s²
+2. Run 10-minute stream test — verify no crashes
+3. Run buzzer interference test — verify sensor data unaffected
+4. Run 72-hour storage test — monitor database growth
+→ See `docs/REAL_SIGNAL_VALIDATION_PROTOCOL.md`
 
 **Dataset Acquisition**
 1. Obtain IRB approval (if required)
@@ -294,13 +246,12 @@ Validate the system with clinical experts and patients.
 
 | Stage | Duration | Dependencies |
 |-------|----------|--------------|
-| Stage 2 | 2-3 weeks | ESP32 hardware |
 | Stage 3 | 4-6 weeks | IRB approval, patients |
 | Stage 4 | 2-3 weeks | Stage 3 complete |
 | Stage 5 | 3-4 weeks | Stage 4 complete |
 | Stage 6 | 2-3 weeks | Stage 5 complete |
 | Stage 7 | 4-6 weeks | Clinical partners |
-| **Total** | **17-25 weeks** | |
+| **Total** | **15-22 weeks** | |
 
 ---
 
@@ -318,10 +269,10 @@ Validate the system with clinical experts and patients.
 
 ### Success Criteria
 
-**Stage 2 Success:**
-- ESP32 reads both MPU6050 sensors
-- Data received in PC database
-- Buzzer responds to FOG commands
+**Stage 3 Success:**
+- At least 10 recording sessions collected
+- Data quality report shows <5% packet loss
+- Clinical labels documented
 
 **Stage 5 Success:**
 - Tremor classifier achieves >80% accuracy

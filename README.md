@@ -17,13 +17,19 @@ This system monitors Parkinson's disease symptoms using wearable sensors:
 
 ---
 
-## Start Real Hardware Here
+## Start Here
 
-**Ready to connect real ESP32 + 2x MPU6050 + buzzer?**
+### Real Hardware (Stage 2 — Verified)
+
+**Hardware is connected and working?**
 
 → **[docs/START_REAL_HARDWARE_HERE.md](docs/START_REAL_HARDWARE_HERE.md)**
 
-This guide takes you from zero to working hardware with real sensor data stored in SQLite.
+### Signal Validation & Analysis (Stage 2.1 — Current)
+
+**Validate real sensor data quality and ML readiness?**
+
+→ **[docs/START_STAGE_2_1_HERE.md](docs/START_STAGE_2_1_HERE.md)**
 
 ---
 
@@ -49,7 +55,7 @@ This guide takes you from zero to working hardware with real sensor data stored 
     SQLite Database
 ```
 
-## How to Inspect Stored Data
+## How to Inspect and Analyze Stored Data
 
 ```powershell
 # View latest records
@@ -62,19 +68,42 @@ python tools/watch_sensor_data.py
 python tools/count_sensor_records.py
 ```
 
+### Stage 2.1 Analysis Tools
+
+```powershell
+# Real-time signal visualization (live plot)
+python tools/live_signal_plot.py
+
+# Record a session (start/stop with metadata)
+python tools/record_session.py start
+python tools/record_session.py stop
+
+# Export session data to CSV
+python tools/export_sensor_session.py --output data/export.csv
+
+# Storage growth analysis (72-hour projection)
+python tools/analyze_database_growth.py
+
+# Stream stability analysis (long-running)
+python tools/analyze_stream_stability.py
+
+# Comprehensive data quality report
+python tools/generate_data_quality_report.py
+```
+
 ---
 
 ## Current Stage
 
-**This repository is currently at Stage 1: Project Foundation.**
+**Stage 2.1: Real Signal Validation — COMPLETE**
 
-The system foundation is complete and runnable without physical ESP32 hardware. A mock simulator generates synthetic data for testing.
+Real hardware verified. Analysis modules, CLI tools, and documentation complete. 83 tests passing.
 
 ---
 
-## What Was Implemented in Stage 1
+## What Was Implemented
 
-### Automatically Implemented
+### Stage 1: Project Foundation
 
 - [x] FastAPI backend with REST and WebSocket endpoints
 - [x] Pydantic schemas for sensor, command, and event validation
@@ -85,23 +114,32 @@ The system foundation is complete and runnable without physical ESP32 hardware. 
 - [x] Cue service for FOG buzzer activation
 - [x] Dashboard no-op interface (ready for Blynk integration)
 - [x] Mock ESP32 simulator with synthetic signal generation
-- [x] Comprehensive test suite (47 tests passing)
+- [x] Comprehensive test suite
 - [x] Configuration system with environment variables
 - [x] Logging setup with loguru
 - [x] Documentation (architecture, data contracts, reports)
 
-### NOT Implemented (Requires Manual Action)
+### Stage 1.1: Hardening
 
-- [ ] Real ESP32 firmware
-- [ ] Physical MPU6050 sensor reading
-- [ ] Real tremor classification model
-- [ ] Real FOG detection model
-- [ ] Dataset collection and training
-- [ ] Clinical validation
-- [ ] Blynk or custom dashboard
-- [ ] Caregiver notifications
-- [ ] Authentication and security
-- [ ] Production deployment
+- [x] Device identity validation (patient_id + device_id consistency)
+- [x] Single-transaction database commits
+- [x] Pydantic v2 ConfigDict migration (no deprecation warnings)
+- [x] CommandPacket duration_ms cue contract (1000–30000ms)
+
+### Stage 2: Real ESP32 Hardware (Verified)
+
+- [x] Final firmware: `esp32_dual_mpu6050.ino` — dual MPU6050 + Wi-Fi + buzzer
+- [x] 6 incremental test sketches (basic → I2C → single → dual → Wi-Fi → WebSocket)
+- [x] Real sensor data stored in SQLite (4521+ rows, 1.16 MB)
+- [x] Physical verification by user — end-to-end confirmed
+
+### Stage 2.1: Signal Validation (Current)
+
+- [x] Analysis modules: stream quality, signal quality, storage, session metadata
+- [x] CLI tools: live plot, session recording, CSV export, storage analysis, quality report
+- [x] Documentation: validation protocol, storage evaluation, ML readiness
+- [x] Tests: 83 passing (57 original + 26 new analysis tests)
+- [x] Sidecar JSON session metadata (no DB migration)
 
 ---
 
@@ -112,16 +150,11 @@ parkinson-monitoring-system/
 ├── firmware/
 │   └── esp32_dual_mpu6050/       # ESP32 firmware
 │       ├── esp32_dual_mpu6050.ino # Final firmware (dual MPU6050 + Wi-Fi + buzzer)
-│       └── tests/                  # Incremental test sketches
-│           ├── 01_esp32_basic/     # Basic ESP32 test
-│           ├── 02_i2c_scanner/     # I2C device detection
-│           ├── 03_single_mpu/      # Single MPU6050 test
-│           ├── 04_dual_mpu_serial/ # Dual MPU6050 serial output
-│           ├── 05_wifi_test/       # Wi-Fi connection test
-│           └── 06_websocket_test/  # WebSocket communication test
+│       └── tests/                  # Incremental test sketches (01–06)
 ├── pc_backend/
 │   └── app/
 │       ├── api/                   # REST endpoints
+│       ├── analysis/              # Stage 2.1: signal/stream/storage/session analysis
 │       ├── core/                  # Configuration, logging
 │       ├── database/              # SQLAlchemy models, retention
 │       ├── inference/             # ML model interfaces
@@ -142,12 +175,20 @@ parkinson-monitoring-system/
 ├── tools/
 │   ├── inspect_sensor_data.py     # View stored sensor readings
 │   ├── watch_sensor_data.py       # Live monitor new records
-│   └── count_sensor_records.py    # Record statistics
+│   ├── count_sensor_records.py    # Record statistics
+│   ├── live_signal_plot.py        # Real-time matplotlib visualization
+│   ├── plot_sensor_session.py     # Offline session plots
+│   ├── record_session.py          # Start/stop recording sessions
+│   ├── export_sensor_session.py   # Export data to CSV
+│   ├── analyze_database_growth.py # Storage growth projections
+│   ├── analyze_stream_stability.py # Long-running stability metrics
+│   └── generate_data_quality_report.py # Comprehensive quality report
 ├── data/
 │   ├── raw/                       # Raw sensor data
 │   ├── interim/                   # Intermediate data
-│   └── processed/                 # Final data
-├── tests/                         # Test suite
+│   ├── processed/                 # Final data
+│   └── sessions/                  # Session metadata (sidecar JSON)
+├── tests/                         # Test suite (83 tests)
 ├── docs/                          # Documentation
 ├── .env.example                   # Environment template
 ├── requirements.txt               # Python dependencies
@@ -573,9 +614,9 @@ dir *.db  # Windows
 python -m pytest tests/ -v
 ```
 
-**EXPECTED RESULT**: All 47 tests pass.
+**EXPECTED RESULT**: All 83 tests pass.
 
-**HOW TO VERIFY**: Output shows "47 passed".
+**HOW TO VERIFY**: Output shows "83 passed".
 
 ---
 
@@ -737,32 +778,41 @@ python -m pytest tests/ -v
 
 ## What I Should Do Next
 
-### Recommended Next Development Stage
+### Immediate: Physical Validation (User Action)
 
-**Stage 2: Real ESP32 Firmware**
+Run the validation protocol with real hardware:
 
-Start with basic ESP32 firmware that:
-1. Reads both MPU6050 sensors
-2. Connects to Wi-Fi
-3. Sends sensor packets via WebSocket
-4. Receives and executes commands
-5. Controls buzzer for FOG cueing
+1. **Stationary baseline test** (60 seconds) — verify hand_az ≈ 9.8 m/s²
+2. **10-minute stream test** — verify no crashes or data loss
+3. **Buzzer interference test** — verify sensor data unaffected
+4. **72-hour storage test** — monitor database growth
 
-See `docs/NEXT_STEPS.md` for detailed Stage 2 tasks.
+→ See `docs/REAL_SIGNAL_VALIDATION_PROTOCOL.md`
+
+### Next Development Stage
+
+**Stage 3: Data Collection and Dataset Creation**
+
+- Define recording procedures
+- Create patient consent forms
+- Record tremor/FOG episodes (if available)
+- Label data with clinical assessments
+
+See `docs/NEXT_STEPS.md` for detailed Stage 3 tasks.
 
 ---
 
 ## Known Limitations
 
-### Stage 1 Limitations
+### Current Limitations
 
 1. **No Authentication**: WebSocket connections are open
 2. **In-Memory State**: Connection manager loses state on restart
 3. **Single Worker**: No multi-worker support
-4. **SQLite Write Contention**: Under heavy load
+4. **SQLite Write Contention**: Under heavy load (not a concern for single-device)
 5. **No Real ML**: Model interfaces raise NotImplementedError
-6. **No Real Sensors**: Only synthetic data from simulator
-7. **No Clinical Validation**: All thresholds are placeholders
+6. **No Clinical Validation**: All thresholds are placeholders
+7. **No Blynk/Dashboard**: Caregiver interface is a no-op placeholder
 
 ### Medical Disclaimer
 

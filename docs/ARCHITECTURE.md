@@ -6,7 +6,9 @@
 
 This system monitors Parkinson's disease symptoms (tremor and Freezing of Gait) using wearable sensors and provides real-time cueing to help patients during FOG episodes.
 
-### Hardware Architecture
+**Current status**: Stage 2.1 complete — real hardware verified, analysis modules tested, 83 tests passing.
+
+### Hardware Architecture (Real — Verified)
 
 ```
 +-------------------+     +-------------------+     +-------------------+
@@ -50,16 +52,33 @@ This system monitors Parkinson's disease symptoms (tremor and Freezing of Gait) 
 |           v                    v                    v                            |
 |  +------------------+  +------------------+  +------------------+                |
 |  |  Pydantic        |  |  Connection      |  |  Model           |                |
-|  |  Schemas         |  |  Manager         |  |  Interfaces      |                |
+|  |  Schemas (v2)    |  |  Manager         |  |  Interfaces      |                |
 |  +------------------+  +------------------+  +------------------+                |
 |           |                    |                    |                            |
 |           v                    v                    v                            |
 |  +------------------+  +------------------+  +------------------+                |
-|  |  Database        |  |  Cue Service     |  |  Processing      |                |
-|  |  (SQLite/SQLAlch)|  |  (FOG Cueing)    |  |  Interfaces      |                |
+|  |  Database        |  |  Cue Service     |  |  Analysis        |                |
+|  |  (SQLite/SQLAlch)|  |  (FOG Cueing)    |  |  (Stage 2.1)     |                |
+|  +------------------+  +------------------+  +------------------+                |
+|           |                    |                    |                            |
+|           v                    v                    v                            |
+|  +------------------+  +------------------+  +------------------+                |
+|  |  Retention       |  |  Processing      |  |  Session         |                |
+|  |  Service         |  |  Interfaces      |  |  Metadata        |                |
 |  +------------------+  +------------------+  +------------------+                |
 |                                                                                  |
 +----------------------------------------------------------------------------------+
+```
+
+### Analysis Modules (Stage 2.1)
+
+```
+pc_backend/app/analysis/
+├── __init__.py
+├── stream_quality.py      # Sampling rate, packet loss, jitter, session segmentation
+├── signal_quality.py      # Baseline stats, magnitude, independence checks
+├── storage_analysis.py    # Growth projections, 72-hour feasibility
+└── session_analysis.py    # Session metadata CRUD, sidecar JSON files
 ```
 
 ### Bidirectional Communication Flow
@@ -139,10 +158,12 @@ This system monitors Parkinson's disease symptoms (tremor and Freezing of Gait) 
 | Backend | FastAPI | REST API and WebSocket server |
 | Database | SQLite | Local data storage |
 | ORM | SQLAlchemy | Database abstraction |
-| Validation | Pydantic | Data validation and serialization |
+| Validation | Pydantic v2 | Data validation and serialization (ConfigDict) |
 | WebSocket | FastAPI WebSocket | Real-time communication |
+| Analysis | Python stdlib (math, statistics) | Stream/signal quality analysis |
+| Visualization | matplotlib | Live signal plotting |
 | ML | scikit-learn | Future ML inference |
-| Testing | pytest | Unit and integration tests |
+| Testing | pytest | Unit and integration tests (83 tests) |
 
 ### Security Considerations
 

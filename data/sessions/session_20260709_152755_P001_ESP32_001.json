@@ -1,0 +1,16 @@
+{
+  "session_id": "session_20260709_152755_P001_ESP32_001",
+  "patient_id": "P001",
+  "device_id": "ESP32_001",
+  "start_time": "2026-07-09T15:27:55.427468",
+  "end_time": null,
+  "activity_label": "stationary",
+  "sensor_placement_hand": "unknown",
+  "sensor_placement_shoe": "unknown",
+  "notes": "baseline test",
+  "sample_count": 0,
+  "firmware_version": "unknown",
+  "protocol_version": "1.0",
+  "export_path": null,
+  "start_sequence": 11105
+}
