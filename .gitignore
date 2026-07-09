@@ -70,3 +70,8 @@ logs/
 # Environment
 .env.local
 .env.production
+
+data/raw/daphnet/*
+!data/raw/daphnet/.gitkeep
+data/raw/pads/*
+!data/raw/pads/.gitkeep
