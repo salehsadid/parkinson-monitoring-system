@@ -25,6 +25,7 @@ scipy>=1.11.0
 # Machine learning foundation
 scikit-learn>=1.3.0
 joblib>=1.3.0
+matplotlib>=3.7.0
 
 # Testing
 pytest>=7.4.0

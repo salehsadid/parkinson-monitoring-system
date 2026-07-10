@@ -95,9 +95,9 @@ python tools/generate_data_quality_report.py
 
 ## Current Stage
 
-**Stage 2.1: Real Signal Validation — COMPLETE**
+**Stage 3B.1: Deployment-Aligned Filtering Variants — COMPLETE**
 
-Real hardware verified. Analysis modules, CLI tools, and documentation complete. 83 tests passing.
+FOG signal preprocessing pipeline now strictly generates `none`, `causal`, and `offline_zero_phase` subsets. 91 tests passing.
 
 ---
 
@@ -140,6 +140,34 @@ Real hardware verified. Analysis modules, CLI tools, and documentation complete.
 - [x] Documentation: validation protocol, storage evaluation, ML readiness
 - [x] Tests: 83 passing (57 original + 26 new analysis tests)
 - [x] Sidecar JSON session metadata (no DB migration)
+
+### Stage 3A: Dataset Audit & Adapters
+
+- [x] Reallocation of Daphnet and PADS datasets to raw/
+- [x] Implementation of strict canonical dataset adapters
+- [x] Daphnet (FOG) Ankle extraction and label normalization
+- [x] PADS (Tremor) Right-wrist deterministic isolation
+- [x] Audits: Sampling rate mismatch, Unit compatibility, FOG labels verified
+- [x] PADS labels flagged as lacking sample-level tremor annotations
+
+### Stage 3B: Daphnet FOG Preprocessing
+
+- [x] Reproducible signal processing pipeline (`ml/preprocessing/`)
+- [x] Explicit unit scaling (`milli-g` -> `m/s²`)
+- [x] Explicit resampling via interpolation (`64 Hz` -> `50 Hz`)
+- [x] Windowing (2.0s, 50% overlap) with fractional label policy (0.5 threshold)
+- [x] Explicit deterministic subject split ensuring FOG in all datasets
+- [x] Output normalized ML-ready `.npy` arrays
+- [x] QA plotting tools and metadata extraction
+
+### Stage 3B.1: Deployment-Aligned Filtering Variants
+
+- [x] Parametrized filtering mechanism (`none`, `causal`, `offline_zero_phase`)
+- [x] Legacy future-aware filtering (`scipy.signal.filtfilt`) preserved for evaluation
+- [x] Deployment-compatible causal filter (`scipy.signal.sosfilt`) with initial state mitigation
+- [x] Independent StandardScaler fits per variant on Train data only
+- [x] Preserved output shapes, split determinism, and categorical fractional boundaries
+- [x] Visual comparison QA plot generators
 
 ---
 
